@@ -26,11 +26,18 @@ function EnhancedTable() {
 
   const [loading, setLoading] = useState(true)
 
-  const getData = ({ column, orderBy, offset, limit, query } = {}) => {
+  const getData = ({ column, orderBy, offset, limit, query, types } = {}) => {
     setLoading(true)
     axios
       .get(`https://expressjs-pokedex.herokuapp.com/pokedex`, {
-        params: { column, orderBy, offset, limit, query },
+        params: {
+          column,
+          orderBy,
+          offset,
+          limit,
+          query,
+          types: types?.toString(),
+        },
       })
       .then(response => {
         console.log(response.data)
@@ -64,6 +71,7 @@ function EnhancedTable() {
       column: property,
       orderBy: _order,
       query,
+      types: selectedTypes,
     })
   }
 
@@ -76,6 +84,7 @@ function EnhancedTable() {
         offset: rows.length,
         limit: rowsPerPage,
         query,
+        types: selectedTypes,
       })
   }
 
@@ -88,6 +97,7 @@ function EnhancedTable() {
       orderBy: order,
       limit: rowsPerPage,
       query,
+      types: selectedTypes,
     })
   }
 
@@ -108,6 +118,26 @@ function EnhancedTable() {
       orderBy: order,
       limit: rowsPerPage,
       query,
+      types: selectedTypes,
+    })
+  }
+
+  const [selectedTypes, setSelectedTypes] = useState([])
+
+  const handleTypeChange = e => {
+    const selectedTypes = e.target.value
+    setSelectedTypes(
+      typeof selectedTypes == 'string'
+        ? selectedTypes.split(',')
+        : selectedTypes
+    )
+    setPage(0)
+    getData({
+      column: orderBy,
+      orderBy: order,
+      limit: rowsPerPage,
+      query,
+      types: selectedTypes,
     })
   }
 
@@ -119,7 +149,9 @@ function EnhancedTable() {
           mb: 2,
         }}
       >
-        <EnhancedTableToolbar query={query} handleChange={handleChange} />
+        <EnhancedTableToolbar
+          {...{ query, handleChange, selectedTypes, handleTypeChange }}
+        />
         <TableContainer>
           <Table sx={{ minWidth: 750, position: 'relative' }} size={'medium'}>
             {loading && (
@@ -174,7 +206,11 @@ function EnhancedTable() {
                       <TableCell align="right">{row.name}</TableCell>
                       <TableCell align="right">
                         {row.types.map(type => (
-                          <Type key={type} type={type} />
+                          <Type
+                            key={type}
+                            type={type}
+                            style={{ marginLeft: '3px' }}
+                          />
                         ))}
                       </TableCell>
                     </TableRow>

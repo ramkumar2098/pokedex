@@ -1,6 +1,6 @@
 import { Chip } from '@mui/material'
 
-function Type({ type }) {
+function Type({ type, size = 'medium', style }) {
   let backgroundColor = 'rgb(0 0 0 / 8%)'
   let color = '#fff'
 
@@ -54,7 +54,11 @@ function Type({ type }) {
       color = '#000'
   }
   return (
-    <Chip label={type} style={{ color, backgroundColor, marginLeft: '3px' }} />
+    <Chip
+      label={type}
+      size={size}
+      style={{ color, backgroundColor, ...style }}
+    />
   )
 }
 
